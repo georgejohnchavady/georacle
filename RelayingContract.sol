@@ -30,7 +30,7 @@ contract Oracle {
       r.qtum[address(0x46c18280FBc55ba665177416f316ae151f1baEba)] = 1;
 
       // launch an event to be detected by oracle outside of blockchain
-      emit NewRequest (currentId, _urlToQuery, _attributeToFetch);
+      emit NewRequest(currentId, _urlToQuery, _attributeToFetch);
 
       // increase request id
       currentId++;
