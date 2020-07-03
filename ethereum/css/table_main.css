@@ -1,0 +1,27 @@
+@font-face {
+  font-family: Poppins-Regular;
+  src: url('../fonts/poppins/Poppins-Regular.ttf');
+}
+
+
+body, html {
+	height: 100%;
+	font-family: sans-serif;
+}
+
+.table {
+  width: 100%;
+  display: table;
+  margin: 0;
+  font-family: Poppins-Bold;
+  font-size: 16px;
+  color: blue;
+  line-height: 1.2;
+  text-align: center;
+  margin-bottom: 13px;
+  content: attr(data-title);
+  min-width: 98px;
+  display: block;
+  border-color: blue;
+}
+

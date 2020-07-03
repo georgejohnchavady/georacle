@@ -16,13 +16,13 @@ contract Oracle {
       string urlToQuery;                //API url
       string attributeToFetch;          //json attribute (key) to retrieve in the response
       string agreedValue;               //value from key
-      mapping(uint => string) anwers;   //answers provided by the oracles
+      mapping(uint => string) answers;   //answers provided by the oracles
       mapping(address => uint) qtum;  //oracles which will query the answer (1=oracle hasn't voted, 2=oracle has voted)
     }
 
     function createRequest (string memory _urlToQuery, string memory _attributeToFetch) public payable{
-      uint lenght = requests.push(Request(currentId, _urlToQuery, _attributeToFetch, ""));
-      Request storage r = requests[lenght-1];
+      uint length = requests.push(Request(currentId, _urlToQuery, _attributeToFetch, ""));
+      Request storage r = requests[length-1];
 
       // Hardcoded oracles address
       r.qtum[address(0x06517087a60E27621C67FE9221CF0327c0d057f0)] = 1;
@@ -52,9 +52,9 @@ contract Oracle {
         bool found = false;
         while(!found) {
           //find first empty slot
-          if(bytes(currRequest.anwers[tmpI]).length == 0){
+          if(bytes(currRequest.answers[tmpI]).length == 0){
             found = true;
-            currRequest.anwers[tmpI] = _valueRetrieved;
+            currRequest.answers[tmpI] = _valueRetrieved;
           }
           tmpI++;
         }
@@ -64,7 +64,7 @@ contract Oracle {
         //iterate through oracle list and check if enough oracles(minimum quorum)
         //have voted the same answer has the current one
         for(uint i = 0; i < totalOracleCount; i++){
-          bytes memory a = bytes(currRequest.anwers[i]);
+          bytes memory a = bytes(currRequest.answers[i]);
           bytes memory b = bytes(_valueRetrieved);
 
           if(keccak256(a) == keccak256(b)){
