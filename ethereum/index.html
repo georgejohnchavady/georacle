@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="css/main.css">
 
     <script type="text/javascript" src="C:/Users/User/Desktop/georacle/ethereum/node_modules/web3/dist/web3.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/oracle.css">
     <link rel="stylesheet" type="text/css" href="css/oracleform.css">
@@ -59,7 +59,11 @@
         <script>
             var eventlist;
             // set the provider you want from Web3.providers
+
             const web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/8a20eb34182e4ddabd54630bcea55eb7"));
+            const sender = '0x06517087a60E27621C67FE9221CF0327c0d057f0';
+            const privateKey = ethereumjs.Buffer.Buffer('6E927CABFE225D55F60D9ACB37ADE059E227E3E6C83353869B5E2D4C92034818', 'hex')
+
             //add the oracle account as default account. Note: it is not the contract account
             web3.eth.Contract.defaultAccount='0x06517087a60E27621C67FE9221CF0327c0d057f0';
             abi = [
@@ -154,32 +158,99 @@
 
             function submitData(){
                 id= $("#requestid").val();
-                data = $("#submitdata").text;
-                console.log(id);
+                data = $("#submitdata").val();
+                if(id.length !== 0 && data.length !== 0){
+                    console.log(id);
+                    console.log(data);
+                }
+
+                shaId = web3.utils.sha3(id);
+                shaData = web3.utils.sha3(data);
+                console.log(shaId);
+                console.log(shaData);
                 console.log(oracleContract);
-                //oracleContract.methods.updateRequest(id, data).send();
+                const senderPrivateKey = ethereumjs.Buffer.Buffer.from(privateKey, 'hex')
+                receiver = address;
+                console.log('senderPrivateKey: ', (senderPrivateKey));
+
+                //printing details of
+                console.log('typeof ethereumjs:',               (typeof ethereumjs))
+                console.log('Object.keys(ethereumjs):',         Object.keys(ethereumjs))
+                console.log('typeof ethereumjs.Tx:',            (typeof ethereumjs.Tx))
+                console.log('typeof ethereumjs.RLP:',           (typeof ethereumjs.RLP))
+                console.log('typeof ethereumjs.Util:',          (typeof ethereumjs.Util))
+                console.log('typeof ethereumjs.Buffer:',        (typeof ethereumjs.Buffer))
+                console.log('typeof ethereumjs.Buffer.Buffer:', (typeof ethereumjs.Buffer.Buffer))
+
+                //creating a signed transaction object
+                var txCount = web3.eth.getTransactionCount(sender);
+                var functionSelector = web3.utils.sha3('updateRequest()');
+
+                console.log('function selector: ', functionSelector);
+                var rawTx = {
+                        nonce:    web3.utils.toHex(txCount),
+                        gasLimit: web3.utils.toHex(21000),
+                        gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'gwei')),
+                        to:       receiver,
+                        value:    web3.utils.toHex(web3.utils.toWei('0.3', 'ether')),
+                        data: '0xc287e0ed' + shaId + shaData
+                    }
+                const txObject = new ethereumjs.Tx(rawTx);
+                txObject.sign(privateKey);
+
+                var serializedTx = txObject.serialize();
+                console.log(serializedTx.toString('hex'));
+
+
+
+
+                /* web3.eth.getTransactionCount(sender, (err, txCount) => {
+                      txObject = {
+                      nonce:    web3.utils.toHex(txCount),
+                      to:       receiver,
+                      value:    web3.utils.toHex(web3.utils.toWei('0.3', 'ether')),
+                      gasLimit: web3.utils.toHex(21000),
+                      gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'gwei'))
+                    }
+                  })
+
+
+                const transaction = new ethereumjs.Tx(txObject);
+                transaction.sign(privateKey);
+
+                const serializedTx = tx.serialize();
+                const raw = '0x' + serializedTx.toString('hex');
+                console.log('raw: ', (raw)); */
+
+
+                // Broadcast the transaction
+
+                /*web3.eth.sendSignedTransaction(raw, (err, txHash) => {
+                    console.log('txHash:', txHash);
+                    // Now go check etherscan to see the transaction!
+                }) */
+
+                //calling a contract function to change the state using send()
+                /*oracleContract.methods.updateRequest(id, data).send({from:'0x06517087a60E27621C67FE9221CF0327c0d057f0',gasPrice:10000, gas:10000},function(error, result){
+                    console.log(result);
+                    console.log(error);
+                });*/
             }
 
             function getRequests(){
 
 
                 var event = oracleContract.events.NewRequest();
-                console.log("event :")
-                console.log(event);
 
                 oracleContract.getPastEvents(
-                    'AllEvents',
+                    //'AllEvents',
+                    'NewRequest',
                     {
                         fromBlock: 0,
                         toBlock: 'latest'
                     },
-                    (err, events) => { console.log(events);
+                    (err, events) => {
                     eventlist=events;
-                    console.log(eventlist.length);
-
-                    console.log(eventlist[0].returnValues.id);
-                    console.log(eventlist[0].returnValues.urlToQuery);
-                    console.log(eventlist[0].returnValues.attributeToFetch);
                     generateTable();
                     $("#contractdetails").hide();
                     });
