@@ -62,7 +62,7 @@
 
             const web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/8a20eb34182e4ddabd54630bcea55eb7"));
             const sender = '0x06517087a60E27621C67FE9221CF0327c0d057f0';
-            const privateKey = ethereumjs.Buffer.Buffer('6E927CABFE225D55F60D9ACB37ADE059E227E3E6C83353869B5E2D4C92034818', 'hex')
+            const senderPrivateKey = ethereumjs.Buffer.Buffer('6E927CABFE225D55F60D9ACB37ADE059E227E3E6C83353869B5E2D4C92034818', 'hex')
 
             //add the oracle account as default account. Note: it is not the contract account
             web3.eth.Contract.defaultAccount='0x06517087a60E27621C67FE9221CF0327c0d057f0';
@@ -153,70 +153,86 @@
                     "type": "event"
                 }];
             //address of the oracle contract
-            var address = '0x8D1EaE39aAA701568b094dF721B5c34528668Fd1';
-            var oracleContract =  new web3.eth.Contract(abi, address);
+            var oracleContracAddress = '0x8D1EaE39aAA701568b094dF721B5c34528668Fd1';
+            var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
+            console.log(oracleContract);
 
             function submitData(){
-                id= $("#requestid").val();
+                id = String($("#requestid").val());
                 data = $("#submitdata").val();
                 if(id.length !== 0 && data.length !== 0){
-                    console.log(id);
-                    console.log(data);
+                    console.log('id: ', id);
+                    console.log('data: ', data);
                 }
 
-                shaId = web3.utils.sha3(id);
-                shaData = web3.utils.sha3(data);
-                console.log(shaId);
-                console.log(shaData);
                 console.log(oracleContract);
-                const senderPrivateKey = ethereumjs.Buffer.Buffer.from(privateKey, 'hex')
-                receiver = address;
                 console.log('senderPrivateKey: ', (senderPrivateKey));
 
-                //printing details of
-                console.log('typeof ethereumjs:',               (typeof ethereumjs))
-                console.log('Object.keys(ethereumjs):',         Object.keys(ethereumjs))
-                console.log('typeof ethereumjs.Tx:',            (typeof ethereumjs.Tx))
-                console.log('typeof ethereumjs.RLP:',           (typeof ethereumjs.RLP))
-                console.log('typeof ethereumjs.Util:',          (typeof ethereumjs.Util))
-                console.log('typeof ethereumjs.Buffer:',        (typeof ethereumjs.Buffer))
-                console.log('typeof ethereumjs.Buffer.Buffer:', (typeof ethereumjs.Buffer.Buffer))
-
                 //creating a signed transaction object
-                var txCount = web3.eth.getTransactionCount(sender);
-                var functionSelector = web3.utils.sha3('updateRequest()');
 
-                console.log('function selector: ', functionSelector);
+                var txCount = web3.eth.getTransactionCount(sender);
+
+                web3.eth.getTransactionCount(sender, (err, txCount) => {
+
+                    const txObject1 = {
+                      nonce:    web3.utils.toHex(txCount),
+                      gasLimit: web3.utils.toHex(800000), // Raise the gas limit to a much higher amount
+                      gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'gwei')),
+                      to: oracleContracAddress,
+                      data: oracleContract.methods.updateRequest(id, data).encodeABI()
+                    }
+
+                const tx = new ethereumjs.Tx(txObject1)
+                console.log('transaction: ', tx);
+                tx.sign(senderPrivateKey);
+                const serializedTx = tx.serialize()
+                const raw = '0x' + serializedTx.toString('hex')
+
+                web3.eth.sendSignedTransaction(raw, (err, txHash) => {
+                    console.log('err:', err, 'txHash:', txHash)
+                    // Use this txHash to find the contract on Etherscan!
+                })
+                })
+
+
+                const functionAbi = web3.eth.abi.encodeFunctionCall({
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "_id",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "_valueRetrieved",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "updateRequest",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }, [id, data]);
+                console.log('fucntionAbi: ', functionAbi);
+
+
                 var rawTx = {
                         nonce:    web3.utils.toHex(txCount),
-                        gasLimit: web3.utils.toHex(21000),
+                        gasLimit: web3.utils.toHex(200000),
                         gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'gwei')),
-                        to:       receiver,
-                        value:    web3.utils.toHex(web3.utils.toWei('0.3', 'ether')),
-                        data: '0xc287e0ed' + shaId + shaData
+                        to:       oracleContracAddress,
+                        value:    web3.utils.toHex(web3.utils.toWei('0.5', 'ether')),
+                        data:     functionAbi
                     }
                 const txObject = new ethereumjs.Tx(rawTx);
-                txObject.sign(privateKey);
+                txObject.sign(senderPrivateKey);
 
                 var serializedTx = txObject.serialize();
                 console.log(serializedTx.toString('hex'));
 
-                //creating a signed transaction object
-                var txCount = web3.eth.getTransactionCount(sender);
+                web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
+                    .on('receipt', console.log);
 
-                const contractFunction = oracleContract.methods.updateRequest(0,'233');
-                console.log(contractFunction);
-                const functionAbi = contractFunction.encodeABI();
-                console.log('fucntionAbi: ', functionAbi);
-
-                var updateRequestEncoded = web3.eth.abi.encodeFunctionSignature('updateRequest(uint256,string)');
-                console.log('updateRequestEncoded',  updateRequestEncoded);
-
-                var idEncoded = web3.eth.abi.encodeParameter('uint256', id);
-                console.log('id Encoded: ', idEncoded);
-
-                var dataEncoded = web3.eth.abi.encodeParameter('string', data);
-                console.log('data Encoded: ', dataEncoded);
 
 
                 /* web3.eth.getTransactionCount(sender, (err, txCount) => {
