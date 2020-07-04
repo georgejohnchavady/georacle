@@ -37,6 +37,16 @@ https://web3js.readthedocs.io/en/v1.2.0/web3-eth-contract.html#id36
 https://infura.io/dashboard/ethereum/8a20eb34182e4ddabd54630bcea55eb7/settings
 
 
+Topic - 0x0312239616abfb14f7ffa065155abb0ca047274d86c965890db4c8a48b8ce4b6
+
+
+Full - tutorial
+https://www.dappuniversity.com/articles/web3-js-intro
+https://web3js.readthedocs.io/en/v1.2.0/web3-eth-accounts.html#signtransaction
+https://web3js.readthedocs.io/en/v1.2.0/web3-eth.html#sendsignedtransaction
+https://solidity.readthedocs.io/en/latest/abi-spec.html
+
+
 
 
 
