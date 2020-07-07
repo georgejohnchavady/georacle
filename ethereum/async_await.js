@@ -3,7 +3,7 @@ return new Promise((resolve, reject) =>{
 
     setTimeout(() =>{
 
-        let error = true
+        let error = false
         if(!error){
             resolve({text: 'complete code example'})
         }
@@ -17,8 +17,14 @@ return new Promise((resolve, reject) =>{
 }
 
 async function fetchTodo(){
-    const todo = await getTodo();
-    return todo
+    try{
+        const todo = await getTodo();
+        return todo
+    }
+    catch{
+        console.log("error caught in fetchTodo() !")
+    }
+
 }
 
 fetchTodo().then((todo) =>{
