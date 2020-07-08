@@ -47,6 +47,9 @@ https://web3js.readthedocs.io/en/v1.2.0/web3-eth.html#sendsignedtransaction
 https://solidity.readthedocs.io/en/latest/abi-spec.html
 
 
+Important git repo - https://github.com/pedroduartecosta/blockchain-oracle
+
+
 
 
 
