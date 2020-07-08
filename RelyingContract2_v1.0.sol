@@ -12,7 +12,7 @@ contract ExampleContract {
         Oracle oracle = Oracle(oracle_addr);
         string memory url = "https://api.pro.coinbase.com/products/ETH-USD/ticker";
         string memory attribute = "price";
-        oracle.createRequest(false, url, attribute);
+        oracle.createRequest(true, url, attribute);
         emit LogNewOracleQuery("request triggered");
     }
 }

@@ -1,18 +1,19 @@
 pragma solidity ^0.4.25;
 import "https://github.com/georgejohnchavady/georacle/blob/master/OracleContractv1.0.sol";
-contract ExampleContract {
+contract BettingContract {
 
     event LogNewOracleQuery(string description);
 
 
 
-    function updatePrice() payable public{
+    function tossACoin() payable public{
         //send 12 wei while creating contract instance
-        address oracle_addr  = 0xCfa03766fa8a3d8C6521Dca5Af3f6B7D63645300;
+        address oracle_addr  = 0x8D1EaE39aAA701568b094dF721B5c34528668Fd1;
         Oracle oracle = Oracle(oracle_addr);
-        string memory url = "https://api.pro.coinbase.com/products/ETH-USD/ticker";
-        string memory attribute = "price";
+        string memory url = "https://www.wolframalpha.com/input";
+        string memory attribute = "toss a coin";
         oracle.createRequest(false, url, attribute);
         emit LogNewOracleQuery("request triggered");
     }
 }
+//contract address - 0x3fde321809ef049127111dccc1c83234632ca0f9

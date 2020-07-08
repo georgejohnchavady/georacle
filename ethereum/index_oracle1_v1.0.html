@@ -230,6 +230,7 @@
                 requests.push(["Request Id", "URL", "Attribute"]);
                 var i, j, k;
                 for(i=0;i<eventlist.length;i++){
+                    console.log(eventlist[i].returnValues.apiFlag);
                     if(eventlist[i].returnValues.apiFlag==false)
                         requests.push([eventlist[i].returnValues.id, eventlist[i].returnValues.urlToQuery, eventlist[i].returnValues.attributeToFetch])
                 }
