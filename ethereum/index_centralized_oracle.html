@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ORACLE SQUARE - 1</title>
+
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <script type="text/javascript" src="C:/Users/User/Desktop/georacle/ethereum/node_modules/web3/dist/web3.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/oracle.css">
+    <link rel="stylesheet" type="text/css" href="css/oracleform.css">
+
+    <link rel="stylesheet" type="text/css" href="css/table_main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" ></script>
+    </head>
+    <body>
+
+        <div class="card card-6">
+            <div class="card-heading">
+                <h2 class="title" style="color:rgb(11, 49, 121)">ORACLE SQUARE - 1</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="value">
+                        <div class="input-group">
+                            <textarea class="textarea--style-6" id="contractdetails" name="message" placeholder="Details of the contract"></textarea>
+                            <div id="dvTable" class="table"></div>
+                        </div>
+                    </div>
+                    <div class="col-12" style="border: none; ">
+                        <button class="btn btn--radius-2 btn--blue-2" id="getrequest" onclick="getRequests()">Read Events</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="value">
+                        <div class="input-group">
+                            <label>Request ID</label>
+                            <textarea class="textarea--style-2"  id="requestid" name="message" placeholder="Enter Request ID"></textarea>
+                            <label style="padding-top: 5px">Data</label>
+                            <textarea class="textarea--style-2"  id="submitdata" name="message" placeholder="Data to be submitted"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-12" style="border: none; ">
+                        <button class="btn btn--radius-2 btn--blue-2" id="senddata" onclick="submitData()">Send Data</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            var eventlist;
+            // set the provider you want from Web3.providers
+
+            const web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/8a20eb34182e4ddabd54630bcea55eb7"));
+            const sender = '0x45311c331cED3ca4272671AD7E72c8F73140012F';
+            const senderPrivateKey = ethereumjs.Buffer.Buffer('E00E7F652B4674D66C1A10B4595626D05A633821DFD2797E7928BC4DCB41D9BA', 'hex')
+
+            //add the oracle account as default account. Note: it is not the contract account
+            web3.eth.Contract.defaultAccount='0x45311c331cED3ca4272671AD7E72c8F73140012F';
+            abi = [
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "_id",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "_valueRetrieved",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "updateRequest",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "_urlToQuery",
+                            "type": "string"
+                        },
+                        {
+                            "name": "_attributeToFetch",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "createRequest",
+                    "outputs": [],
+                    "payable": true,
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "name": "id",
+                            "type": "uint256"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "urlToQuery",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "attributeToFetch",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "NewRequest",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "name": "id",
+                            "type": "uint256"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "urlToQuery",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "attributeToFetch",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "agreedValue",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "UpdatedRequest",
+                    "type": "event"
+                }];
+            //address of the oracle contract
+            var oracleContracAddress = '0x8D1EaE39aAA701568b094dF721B5c34528668Fd1';
+            var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
+            console.log(oracleContract);
+
+            function submitData(){
+                id = String($("#requestid").val());
+                data = $("#submitdata").val();
+                if(id.length !== 0 && data.length !== 0){
+                    console.log('id: ', id);
+                    console.log('data: ', data);
+                }
+
+                console.log(oracleContract);
+                console.log('senderPrivateKey: ', (senderPrivateKey));
+
+                //creating a signed transaction object
+
+                var txCount = web3.eth.getTransactionCount(sender);
+
+                web3.eth.getTransactionCount(sender, (err, txCount) => {
+
+                    const txObject1 = {
+                      nonce:    web3.utils.toHex(txCount),
+                      gasLimit: web3.utils.toHex(800000), // Raise the gas limit to a much higher amount
+                      gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'gwei')),
+                      to: oracleContracAddress,
+                      data: oracleContract.methods.updateRequest(id, data).encodeABI()
+                    }
+
+                const tx = new ethereumjs.Tx(txObject1)
+                console.log('transaction: ', tx);
+                tx.sign(senderPrivateKey);
+                const serializedTx = tx.serialize()
+                const raw = '0x' + serializedTx.toString('hex')
+
+                web3.eth.sendSignedTransaction(raw, (err, txHash) => {
+                    console.log('err:', err, 'txHash:', txHash)
+                    // Use this txHash to find the contract on Etherscan!
+                })
+                })
+            }
+
+            function getRequests(){
+
+
+                var event = oracleContract.events.NewRequest();
+
+                oracleContract.getPastEvents(
+                    //'AllEvents',
+                    'NewRequest',
+                    {
+                        fromBlock: 0,
+                        toBlock: 'latest'
+                    },
+                    (err, events) => {
+                    eventlist=events;
+                    generateTable();
+                    $("#contractdetails").hide();
+                    });
+            }
+
+            function generateTable() {
+                //Build an array containing Customer records.
+                var requests = [];
+                requests.push(["Request Id", "URL", "Attribute"]);
+                var i, j, k;
+                for(i=0;i<eventlist.length;i++){
+                    requests.push([eventlist[i].returnValues.id, eventlist[i].returnValues.urlToQuery, eventlist[i].returnValues.attributeToFetch])
+                }
+
+                //Create a HTML Table element.
+                var table = document.createElement("TABLE");
+                table.border = "1";
+
+                //Get the count of columns.
+                var columnCount = requests[0].length;
+
+
+                //Add the header row.
+                var row = table.insertRow(-1);
+                for (var i = 0; i < columnCount; i++) {
+                    var headerCell = document.createElement("TH");
+                    headerCell.innerHTML = requests[0][i];
+                    row.appendChild(headerCell);
+                }
+
+                //Add the data rows.
+                for (var i = 1; i < requests.length; i++) {
+                    row = table.insertRow(-1);
+                    for (var j = 0; j < columnCount; j++) {
+                        var cell = row.insertCell(-1);
+                        cell.innerHTML = requests[i][j];
+                    }
+                }
+
+                var dvTable = document.getElementById("dvTable");
+                dvTable.innerHTML = "";
+                table.style.cssText = 'border-color: blue';
+                dvTable.appendChild(table);
+            }
+        </script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    </body>
+</html>

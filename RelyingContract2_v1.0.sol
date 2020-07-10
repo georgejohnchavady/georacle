@@ -16,3 +16,4 @@ contract ExampleContract {
         emit LogNewOracleQuery("request triggered");
     }
 }
+//oracle contract address - 0xCfa03766fa8a3d8C6521Dca5Af3f6B7D63645300

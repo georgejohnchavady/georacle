@@ -16,4 +16,4 @@ contract BettingContract {
         emit LogNewOracleQuery("request triggered");
     }
 }
-//contract address - 0x3fde321809ef049127111dccc1c83234632ca0f9
+//oracle contract address - 0xCfa03766fa8a3d8C6521Dca5Af3f6B7D63645300
