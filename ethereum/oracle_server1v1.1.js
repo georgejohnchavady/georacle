@@ -25,103 +25,103 @@ const senderPrivateKey = Buffer.from('6E927CABFE225D55F60D9ACB37ADE059E227E3E6C8
 //add the oracle account as default account. Note: it is not the contract account
 web3.eth.Contract.defaultAccount='0x06517087a60E27621C67FE9221CF0327c0d057f0';
 abi = [
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "_apiFlag",
-                "type": "bool"
-            },
-            {
-                "name": "_urlToQuery",
-                "type": "string"
-            },
-            {
-                "name": "_attributeToFetch",
-                "type": "string"
-            }
-        ],
-        "name": "createRequest",
-        "outputs": [],
-        "payable": true,
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "_id",
-                "type": "uint256"
-            },
-            {
-                "name": "_valueRetrieved",
-                "type": "string"
-            }
-        ],
-        "name": "updateRequest",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "name": "apiFlag",
-                "type": "bool"
-            },
-            {
-                "indexed": false,
-                "name": "id",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "name": "urlToQuery",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "name": "attributeToFetch",
-                "type": "string"
-            }
-        ],
-        "name": "NewRequest",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "name": "id",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "name": "urlToQuery",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "name": "attributeToFetch",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "name": "agreedValue",
-                "type": "string"
-            }
-        ],
-        "name": "UpdatedRequest",
-        "type": "event"
-    }
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_apiFlag",
+				"type": "bool"
+			},
+			{
+				"name": "_urlToQuery",
+				"type": "string"
+			},
+			{
+				"name": "_attributeToFetch",
+				"type": "string"
+			}
+		],
+		"name": "createRequest",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"name": "_valueRetrieved",
+				"type": "string"
+			}
+		],
+		"name": "updateRequest",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "apiFlag",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "urlToQuery",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "attributeToFetch",
+				"type": "string"
+			}
+		],
+		"name": "NewRequest",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "urlToQuery",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "attributeToFetch",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "agreedValue",
+				"type": "string"
+			}
+		],
+		"name": "UpdatedRequest",
+		"type": "event"
+	}
 ];
 //address of the oracle contract
-var oracleContracAddress = '0xCfa03766fa8a3d8C6521Dca5Af3f6B7D63645300';
+var oracleContracAddress = '0x545A74a1b53f3B5Db794D6046b6Da96440297FFa';
 var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
 var eventlist = [];
 var eventsFromDB = [];

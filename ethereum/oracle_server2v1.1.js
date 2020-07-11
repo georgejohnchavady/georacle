@@ -19,109 +19,109 @@ client.connect();
 
 
 const web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/8a20eb34182e4ddabd54630bcea55eb7"));
-const sender = '0x06517087a60E27621C67FE9221CF0327c0d057f0';
-const senderPrivateKey = Buffer.from('6E927CABFE225D55F60D9ACB37ADE059E227E3E6C83353869B5E2D4C92034818','hex');
+const sender = '0x67f4A64D18B549f5C218fb7A0Ce358af34304510';
+const senderPrivateKey = Buffer.from('D40533E0E153D76B13D51DFD1148D528E928A600E191EAD4DA9319C12FF3722B','hex');
 
 //add the oracle account as default account. Note: it is not the contract account
-web3.eth.Contract.defaultAccount='0x06517087a60E27621C67FE9221CF0327c0d057f0';
+web3.eth.Contract.defaultAccount='0x67f4A64D18B549f5C218fb7A0Ce358af34304510';
 abi = [
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "_apiFlag",
-                "type": "bool"
-            },
-            {
-                "name": "_urlToQuery",
-                "type": "string"
-            },
-            {
-                "name": "_attributeToFetch",
-                "type": "string"
-            }
-        ],
-        "name": "createRequest",
-        "outputs": [],
-        "payable": true,
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "_id",
-                "type": "uint256"
-            },
-            {
-                "name": "_valueRetrieved",
-                "type": "string"
-            }
-        ],
-        "name": "updateRequest",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "name": "apiFlag",
-                "type": "bool"
-            },
-            {
-                "indexed": false,
-                "name": "id",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "name": "urlToQuery",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "name": "attributeToFetch",
-                "type": "string"
-            }
-        ],
-        "name": "NewRequest",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "name": "id",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "name": "urlToQuery",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "name": "attributeToFetch",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "name": "agreedValue",
-                "type": "string"
-            }
-        ],
-        "name": "UpdatedRequest",
-        "type": "event"
-    }
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_apiFlag",
+				"type": "bool"
+			},
+			{
+				"name": "_urlToQuery",
+				"type": "string"
+			},
+			{
+				"name": "_attributeToFetch",
+				"type": "string"
+			}
+		],
+		"name": "createRequest",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"name": "_valueRetrieved",
+				"type": "string"
+			}
+		],
+		"name": "updateRequest",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "apiFlag",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "urlToQuery",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "attributeToFetch",
+				"type": "string"
+			}
+		],
+		"name": "NewRequest",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "urlToQuery",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "attributeToFetch",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "agreedValue",
+				"type": "string"
+			}
+		],
+		"name": "UpdatedRequest",
+		"type": "event"
+	}
 ];
 //address of the oracle contract
-var oracleContracAddress = '0xCfa03766fa8a3d8C6521Dca5Af3f6B7D63645300';
+var oracleContracAddress = '0x545A74a1b53f3B5Db794D6046b6Da96440297FFa';
 var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
 var eventlist = [];
 var eventsFromDB = [];
@@ -168,6 +168,8 @@ function polling(){
 
 
         getEventsFromDB();
+        console.log("events from db: ")
+        console.log(eventsFromDB);
 
         for(i=0;i<request_list.length;i++){
             var flag = false;
@@ -175,10 +177,10 @@ function polling(){
             for(j=0;j<eventsFromDB.length;j++){
 
                 if(request_list[i][0]!=null){
-                    if(request_list[i][0]==eventsFromDB[j].id && eventsFromDB[j].granted_1==true){
+                    if(request_list[i][0]==eventsFromDB[j].id && eventsFromDB[j].granted_2==true){
                         console.log('request_list[i][0]: ', request_list[i][0]);
                         console.log('eventsFromDB[j].id: ', eventsFromDB[j].id);
-                        console.log('eventsFromDB[j].granted_1: ', eventsFromDB[j].granted_1);
+                        console.log('eventsFromDB[j].granted_2: ', eventsFromDB[j].granted_2);
                         flag = true;
                         break;
                     }
@@ -269,7 +271,7 @@ function polling(){
 function  updateEventDB(id, data) {
     try {
         client.query(
-        `update requests set data_1 = '${data}', granted_1 = true where id = ${id}`
+        `update requests set data_2 = '${data}', granted_2 = true where id = ${id}`
         );
 
     } catch(e) {
@@ -281,7 +283,7 @@ function  updateEventDB(id, data) {
 function  getEventsFromDB() {
     try {
         client.query(
-        `select id, granted_1 from requests`, function(err, results) {
+        `select id, granted_2 from requests`, function(err, results) {
             if (err) {
               throw err;
             }
@@ -304,7 +306,7 @@ function  getEventsFromDB() {
  function  insertEventDB(id, urlToQuery, attributeToFetch, apiFlag, granted) {
     try {
         client.query(
-        `insert into requests(id, urlToQuery, attributeToFetch, apiFlag, granted_1 ) values(${id}, '${urlToQuery}', '${attributeToFetch}', ${apiFlag}, ${granted} )`
+        `insert into requests(id, urlToQuery, attributeToFetch, apiFlag, granted_2 ) values(${id}, '${urlToQuery}', '${attributeToFetch}', ${apiFlag}, ${granted} )`
         );
 
     } catch(e) {
@@ -319,7 +321,7 @@ function  getEventsFromDB() {
  function  insertDuplicateEventDB(id) {
     try {
         client.query(
-        `update requests set granted_1 = false where id = ${id}`
+        `update requests set granted_2 = false where id = ${id}`
         );
 
     } catch(e) {

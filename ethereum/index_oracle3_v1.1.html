@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ORACLE SQUARE - 1</title>
+    <title>ORACLE SQUARE - 3</title>
 
     <link rel="stylesheet" type="text/css" href="css/main.css">
 
@@ -22,7 +22,7 @@
 
         <div class="card card-6">
             <div class="card-heading">
-                <h2 class="title" style="color:rgb(11, 49, 121)">ORACLE SQUARE - 1</h2>
+                <h2 class="title" style="color:rgb(11, 49, 121)">ORACLE SQUARE - 3</h2>
             </div>
             <div class="card-body">
                 <div class="form-row">
@@ -61,11 +61,11 @@
             // set the provider you want from Web3.providers
 
             const web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/8a20eb34182e4ddabd54630bcea55eb7"));
-            const sender = '0x06517087a60E27621C67FE9221CF0327c0d057f0';
-            const senderPrivateKey = ethereumjs.Buffer.Buffer('6E927CABFE225D55F60D9ACB37ADE059E227E3E6C83353869B5E2D4C92034818', 'hex')
+            const sender = '0x46c18280FBc55ba665177416f316ae151f1baEba';
+            const senderPrivateKey = ethereumjs.Buffer.Buffer('A9C678D92C65A218C12CD942B6B2F3A0008A6C94A01F21595B0AFC48639E14D0', 'hex')
 
             //add the oracle account as default account. Note: it is not the contract account
-            web3.eth.Contract.defaultAccount='0x06517087a60E27621C67FE9221CF0327c0d057f0';
+            web3.eth.Contract.defaultAccount='0x46c18280FBc55ba665177416f316ae151f1baEba';
             abi = [
             {
                 "constant": false,
@@ -163,7 +163,7 @@
             }
         ];
             //address of the oracle contract
-            var oracleContracAddress = '0xB5ED456835118FFe41dC59146B118191553bdaE2';
+            var oracleContracAddress = '0x189ef95f5e90c05e79f1be12b111108c96920389';
             var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
             console.log(oracleContract);
 
@@ -200,6 +200,8 @@
 
                 web3.eth.sendSignedTransaction(raw, (err, txHash) => {
                     console.log('err:', err, 'txHash:', txHash)
+                    if(err==null)
+                        alert("Data Sent Successfully! Transaction ID: " + txHash)
                     // Use this txHash to find the contract on Etherscan!
                 })
                 })
