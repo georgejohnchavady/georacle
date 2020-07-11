@@ -80,7 +80,7 @@ contract Oracle {
                 currRequest.attributeToFetch,
                 currRequest.agreedValue
               );
-              //currRequest.contractAddress.__callback(currRequest.id, currRequest.agreedValue);
+              currRequest.contractAddress.call(bytes4(keccak256("__callback(uint256, string)")), currRequest.id, currRequest.agreedValue);
             }
           }
         }
@@ -88,3 +88,4 @@ contract Oracle {
     }
 
 }
+//contract address - 0xabFbec5Fb65cc46F85e1A0763F3D68939f08Dc40
