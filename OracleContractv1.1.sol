@@ -22,6 +22,10 @@ contract Oracle {
       mapping(address => uint) qtum;  //oracles which will query the answer (1=oracle hasn't voted, 2=oracle has voted)
     }
 
+    function callback(uint id, string result) payable public{
+
+    }
+
     function createRequest (bool _apiFlag, string memory _urlToQuery, string memory _attributeToFetch) public payable{
 
       uint length = requests.push(Request(_apiFlag, currentId, _urlToQuery, _attributeToFetch, msg.sender,""));
@@ -80,7 +84,9 @@ contract Oracle {
                 currRequest.attributeToFetch,
                 currRequest.agreedValue
               );
-              currRequest.contractAddress.call(bytes4(keccak256("__callback(uint256, string)")), currRequest.id, currRequest.agreedValue);
+              //require(currRequest.contractAddress.call(bytes4(keccak256("__callback(uint, string)")), currRequest.id, currRequest.agreedValue));
+              Oracle relyingContract = Oracle(currRequest.contractAddress);
+              relyingContract.callback(currRequest.id, currRequest.agreedValue);
             }
           }
         }
