@@ -2,7 +2,7 @@ pragma solidity ^0.4.25;
 
 contract Oracle {
   Request[] requests; //list of requests made to the contract
-  uint currentId = 1; //increasing request id
+  uint currentId = 0; //increasing request id
   uint minQtum = 2; //minimum number of responses to receive before declaring final result
   uint totalOracleCount = 3; // Hardcoded oracle count
 
@@ -80,7 +80,6 @@ contract Oracle {
                 currRequest.attributeToFetch,
                 currRequest.agreedValue
               );
-              //currRequest.contractAddress.__callback(currRequest.id, currRequest.agreedValue);
             }
           }
         }

@@ -163,7 +163,7 @@
             }
         ];
             //address of the oracle contract
-            var oracleContracAddress = '0xB5ED456835118FFe41dC59146B118191553bdaE2';
+            var oracleContracAddress = '0x21e3aDF90013ab2ecAC1e47e605339e5FE5A2233';
             var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
             console.log(oracleContract);
 
@@ -186,7 +186,7 @@
 
                     const txObject1 = {
                       nonce:    web3.utils.toHex(txCount),
-                      gasLimit: web3.utils.toHex(800000), // Raise the gas limit to a much higher amount
+                      gasLimit: web3.utils.toHex(8000000), // Raise the gas limit to a much higher amount
                       gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'gwei')),
                       to: oracleContracAddress,
                       data: oracleContract.methods.updateRequest(id, data).encodeABI()

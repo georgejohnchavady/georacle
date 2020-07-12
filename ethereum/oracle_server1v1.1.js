@@ -25,103 +25,103 @@ const senderPrivateKey = Buffer.from('6E927CABFE225D55F60D9ACB37ADE059E227E3E6C8
 //add the oracle account as default account. Note: it is not the contract account
 web3.eth.Contract.defaultAccount='0x06517087a60E27621C67FE9221CF0327c0d057f0';
 abi = [
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_apiFlag",
-				"type": "bool"
-			},
-			{
-				"name": "_urlToQuery",
-				"type": "string"
-			},
-			{
-				"name": "_attributeToFetch",
-				"type": "string"
-			}
-		],
-		"name": "createRequest",
-		"outputs": [],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_id",
-				"type": "uint256"
-			},
-			{
-				"name": "_valueRetrieved",
-				"type": "string"
-			}
-		],
-		"name": "updateRequest",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "apiFlag",
-				"type": "bool"
-			},
-			{
-				"indexed": false,
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "urlToQuery",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"name": "attributeToFetch",
-				"type": "string"
-			}
-		],
-		"name": "NewRequest",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "urlToQuery",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"name": "attributeToFetch",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"name": "agreedValue",
-				"type": "string"
-			}
-		],
-		"name": "UpdatedRequest",
-		"type": "event"
-	}
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_apiFlag",
+                "type": "bool"
+            },
+            {
+                "name": "_urlToQuery",
+                "type": "string"
+            },
+            {
+                "name": "_attributeToFetch",
+                "type": "string"
+            }
+        ],
+        "name": "createRequest",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "name": "_valueRetrieved",
+                "type": "string"
+            }
+        ],
+        "name": "updateRequest",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "apiFlag",
+                "type": "bool"
+            },
+            {
+                "indexed": false,
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "urlToQuery",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "name": "attributeToFetch",
+                "type": "string"
+            }
+        ],
+        "name": "NewRequest",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "urlToQuery",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "name": "attributeToFetch",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "name": "agreedValue",
+                "type": "string"
+            }
+        ],
+        "name": "UpdatedRequest",
+        "type": "event"
+    }
 ];
 //address of the oracle contract
-var oracleContracAddress = '0x545A74a1b53f3B5Db794D6046b6Da96440297FFa';
+var oracleContracAddress = '0x21e3aDF90013ab2ecAC1e47e605339e5FE5A2233';
 var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
 var eventlist = [];
 var eventsFromDB = [];
@@ -168,17 +168,19 @@ function polling(){
 
 
         getEventsFromDB();
+        if(eventsFromDB.length==0){
+            for(i=0;i<request_list.length;i++){
+                    initEventDB(request_list[i][0], request_list[i][1], request_list[i][2], true);
+            }
+        }
 
         for(i=0;i<request_list.length;i++){
             var flag = false;
-            console.log('eventsFromDB', eventsFromDB);
+
             for(j=0;j<eventsFromDB.length;j++){
 
                 if(request_list[i][0]!=null){
                     if(request_list[i][0]==eventsFromDB[j].id && eventsFromDB[j].granted_1==true){
-                        console.log('request_list[i][0]: ', request_list[i][0]);
-                        console.log('eventsFromDB[j].id: ', eventsFromDB[j].id);
-                        console.log('eventsFromDB[j].granted_1: ', eventsFromDB[j].granted_1);
                         flag = true;
                         break;
                     }
@@ -301,10 +303,27 @@ function  getEventsFromDB() {
     }
  }
 
+ function  initEventDB(id, urlToQuery, attributeToFetch, apiFlag) {
+    try {
+        client.query(
+        `insert into requests(id, urltoquery, attributetofetch, apiflag) values(${id}, '${urlToQuery}', '${attributeToFetch}', ${apiFlag})`
+        );
+
+    } catch(e) {
+      //if it's 'duplicate record' error, do nothing;
+      // otherwise rethrow
+      if(e.code != 'ER_DUP_ENTRY') {
+        throw e;
+      }
+    }
+ }
+
+
+
  function  insertEventDB(id, urlToQuery, attributeToFetch, apiFlag, granted) {
     try {
         client.query(
-        `insert into requests(id, urlToQuery, attributeToFetch, apiFlag, granted_1 ) values(${id}, '${urlToQuery}', '${attributeToFetch}', ${apiFlag}, ${granted} )`
+        `insert into requests(id, urltoquery, attributetofetch, apiflag, granted_1 ) values(${id}, '${urlToQuery}', '${attributeToFetch}', ${apiFlag}, ${granted} )`
         );
 
     } catch(e) {

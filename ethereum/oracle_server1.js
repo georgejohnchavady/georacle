@@ -121,7 +121,7 @@ abi = [
     }
 ];
 //address of the oracle contract
-var oracleContracAddress = '0xCfa03766fa8a3d8C6521Dca5Af3f6B7D63645300';
+var oracleContracAddress = '0x21e3aDF90013ab2ecAC1e47e605339e5FE5A2233';
 var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
 var eventlist = [];
 var eventsFromDB = [];
@@ -168,17 +168,19 @@ function polling(){
 
 
         getEventsFromDB();
+        if(eventsFromDB.length==0){
+            for(i=0;i<request_list.length;i++){
+                    initEventDB(request_list[i][0], request_list[i][1], request_list[i][2], true);
+            }
+        }
 
         for(i=0;i<request_list.length;i++){
             var flag = false;
-            console.log('eventsFromDB', eventsFromDB);
+
             for(j=0;j<eventsFromDB.length;j++){
 
                 if(request_list[i][0]!=null){
                     if(request_list[i][0]==eventsFromDB[j].id && eventsFromDB[j].granted_1==true){
-                        console.log('request_list[i][0]: ', request_list[i][0]);
-                        console.log('eventsFromDB[j].id: ', eventsFromDB[j].id);
-                        console.log('eventsFromDB[j].granted_1: ', eventsFromDB[j].granted_1);
                         flag = true;
                         break;
                     }
@@ -301,10 +303,27 @@ function  getEventsFromDB() {
     }
  }
 
+ function  initEventDB(id, urlToQuery, attributeToFetch, apiFlag) {
+    try {
+        client.query(
+        `insert into requests(id, urltoquery, attributetofetch, apiflag) values(${id}, '${urlToQuery}', '${attributeToFetch}', ${apiFlag})`
+        );
+
+    } catch(e) {
+      //if it's 'duplicate record' error, do nothing;
+      // otherwise rethrow
+      if(e.code != 'ER_DUP_ENTRY') {
+        throw e;
+      }
+    }
+ }
+
+
+
  function  insertEventDB(id, urlToQuery, attributeToFetch, apiFlag, granted) {
     try {
         client.query(
-        `insert into requests(id, urlToQuery, attributeToFetch, apiFlag, granted_1 ) values(${id}, '${urlToQuery}', '${attributeToFetch}', ${apiFlag}, ${granted} )`
+        `insert into requests(id, urltoquery, attributetofetch, apiflag, granted_1 ) values(${id}, '${urlToQuery}', '${attributeToFetch}', ${apiFlag}, ${granted} )`
         );
 
     } catch(e) {

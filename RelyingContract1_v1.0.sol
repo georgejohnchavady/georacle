@@ -8,11 +8,10 @@ contract ExampleContract {
 
     function updatePrice() payable public{
         //send 12 wei while creating contract instance
-        address oracle_addr  = 0xCfa03766fa8a3d8C6521Dca5Af3f6B7D63645300;
+        address oracle_addr  = 0x3A821dbB80d68621F02D2C826FEADAE77F25a976;
         Oracle oracle = Oracle(oracle_addr);
         string memory url = "https://api.pro.coinbase.com/products/ETH-USD/ticker";
         string memory attribute = "price";
         oracle.createRequest(false, url, attribute);
-        emit LogNewOracleQuery("request triggered");
     }
 }

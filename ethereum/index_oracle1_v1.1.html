@@ -163,7 +163,7 @@
             }
         ];
             //address of the oracle contract
-            var oracleContracAddress = '0xabFbec5Fb65cc46F85e1A0763F3D68939f08Dc40';
+            var oracleContracAddress = '0x21e3aDF90013ab2ecAC1e47e605339e5FE5A2233';
             var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
             console.log(oracleContract);
 
@@ -201,6 +201,8 @@
                 web3.eth.sendSignedTransaction(raw, (err, txHash) => {
                     console.log('err:', err, 'txHash:', txHash)
                     // Use this txHash to find the contract on Etherscan!
+                    if(err==null)
+                        alert("Data Sent Successfully! Transaction ID: " + txHash)
                 })
                 })
             }
