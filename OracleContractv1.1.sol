@@ -80,7 +80,7 @@ contract Oracle {
                 currRequest.attributeToFetch,
                 currRequest.agreedValue
               );
-              currRequest.contractAddress.call.gas(1000000)(bytes4(keccak256("__callback(uint256, string)")), currRequest.id, currRequest.agreedValue);
+              currRequest.contractAddress.call(bytes4(keccak256("__callback(uint256, string)")), currRequest.id, currRequest.agreedValue);
             }
           }
         }
