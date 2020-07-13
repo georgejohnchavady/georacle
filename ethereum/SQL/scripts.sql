@@ -8,3 +8,5 @@ select * from requests
 
 
 update requests set  "granted"=false where id = 3;
+
+delete from requests where id = 1

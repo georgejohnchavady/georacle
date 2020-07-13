@@ -1,5 +1,5 @@
 pragma solidity ^0.4.25;
-import "https://github.com/georgejohnchavady/georacle/blob/master/OracleContractv1.0.sol";
+import "https://github.com/georgejohnchavady/georacle/blob/master/OracleContractv1.1.sol";
 contract BettingContract {
 
     event LogNewOracleQuery(string description);

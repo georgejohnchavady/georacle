@@ -121,7 +121,7 @@ abi = [
     }
 ];
 //address of the oracle contract
-var oracleContracAddress = '0x21e3aDF90013ab2ecAC1e47e605339e5FE5A2233';
+var oracleContracAddress = '0xcBFF55037620fB1797ea4Da6a293947387267e74';
 var oracleContract =  new web3.eth.Contract(abi, oracleContracAddress);
 var eventlist = [];
 var eventsFromDB = [];
