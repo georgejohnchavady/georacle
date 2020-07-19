@@ -288,6 +288,8 @@ function  getEventsFromDB() {
             }
             else{
                 eventsFromDB = results.rows;
+                console.log("events from DB: ");
+                console.log(eventsFromDB);
             }
         });
 
@@ -377,7 +379,6 @@ function aggregateRequests() {
 
             request_list.push([eventlist[i].returnValues.id, eventlist[i].returnValues.urlToQuery, eventlist[i].returnValues.attributeToFetch])
     }
-    console.log(request_list[0]);
     return request_list;
 }
 
