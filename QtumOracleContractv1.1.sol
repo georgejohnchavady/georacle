@@ -32,9 +32,9 @@ contract Oracle {
       Request storage r = requests[length-1];
 
       // Hardcoded oracles address
-      r.qtum[address(qSii6LL4yjedo25oi2VjEDFKkGQKKekB3S)] = 1;
-      r.qtum[address(qHjKMZ9qQMT7uhotZq8tMYJ2531PfHJ6et)] = 1;
-      r.qtum[address(qaPW1ZUg7eTsMM6SrcLXWTJs42d8KGvPvq)] = 1;
+      r.qtum[address(0xqSii6LL4yjedo25oi2VjEDFKkGQKKekB3S)] = 1;
+      r.qtum[address(0xqHjKMZ9qQMT7uhotZq8tMYJ2531PfHJ6et)] = 1;
+      r.qtum[address(0xqaPW1ZUg7eTsMM6SrcLXWTJs42d8KGvPvq)] = 1;
 
       // launch an event to be detected by oracle outside of blockchain
       emit NewRequest (_apiFlag, currentId, _urlToQuery, _attributeToFetch);
