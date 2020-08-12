@@ -1,90 +1,97 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.21;
 
 contract Oracle {
   Request[] requests; //list of requests made to the contract
   uint currentId = 0; //increasing request id
-  uint minQtumOracles = 2; //minimum number of responses to receive before declaring final result
-  uint totalQtumOracles = 3; // Hardcoded oracle count
+  uint minQtum = 2; //minimum number of responses to receive before declaring final result
+  uint totalOracleCount = 3; // Hardcoded oracle count
 
 
-  event oracleQuery (bool flag, uint id, string source, string attribute);
-  event updateQuery(uint id, string source, string attribute, string finalOutcome);
+  event NewRequest (bool apiFlag, uint id, string urlToQuery, string attributeToFetch);
+  event UpdatedRequest(uint id, string urlToQuery, string attributeToFetch, string agreedValue);
 
   // defines a general api request
     struct Request {
       bool api;
       uint id;                          //request id
-      string source;                //source url
-      string attribute;          //json attribute (key) to retrieve in the response
+      string urlToQuery;                //API url
+      string attributeToFetch;          //json attribute (key) to retrieve in the response
       address contractAddress;          // address of the contract to return the value
-      string finalOutcome;               //value from key
-      mapping(uint => string) outcomes;   //outcomes provided by the oracles
-      mapping(address => uint) qtum;  //0=oracle hasn't voted, 1=oracle has voted
+      string agreedValue;               //value from key
+      mapping(uint => string) answers;   //answers provided by the oracles
+      mapping(address => uint) qtum;  //oracles which will query the answer (1=oracle hasn't voted, 2=oracle has voted)
     }
 
     function callback(uint id, string result) payable public{
 
     }
 
-    function oracleQuery(bool _flag, string memory _source, string memory _attribute) public payable{
+    function createRequest (bool _apiFlag, string memory _urlToQuery, string memory _attributeToFetch) public payable{
 
-      uint length = requests.push(Request(_flag, currentId, _source, _attribute, msg.sender,""));
+      uint length = requests.push(Request(_apiFlag, currentId, _urlToQuery, _attributeToFetch, msg.sender,""));
       Request storage r = requests[length-1];
 
-      //Qtum oracle addresses
-      r.qtum[address(qSii6LL4yjedo25oi2VjEDFKkGQKKekB3S)] = 0;
-      r.qtum[address(qHjKMZ9qQMT7uhotZq8tMYJ2531PfHJ6et)] = 0;
-      r.qtum[address(qaPW1ZUg7eTsMM6SrcLXWTJs42d8KGvPvq)] = 0;
+      // Hardcoded oracles address
+      r.qtum[address(00qSii6LL4yjedo25oi2VjEDFKkGQKKekB3S)] = 1;
+      r.qtum[address(00qHjKMZ9qQMT7uhotZq8tMYJ2531PfHJ6et)] = 1;
+      r.qtum[address(00qaPW1ZUg7eTsMM6SrcLXWTJs42d8KGvPvq)] = 1;
 
-      // emit an event to be accessed by the off-chain component
-      emit oracleQuery(_flag, currentId, _source, _attribute);
+      // launch an event to be detected by oracle outside of blockchain
+      emit NewRequest (_apiFlag, currentId, _urlToQuery, _attributeToFetch);
 
       // increase request id
       currentId++;
     }
 
-    function updateQuery(uint _id, string memory _outcome) public {
+    function updateRequest (uint _id, string memory _valueRetrieved) public {
 
-      Request storage currentQuery = requests[_id];
+      Request storage currRequest = requests[_id];
 
-      //check if oracle hasn't voted and is in the list of trusted oracles
-      if(currentQuery.qtum[address(msg.sender)] == 0){
+      //check if oracle is in the list of trusted oracles
+      //and if the oracle hasn't voted yet
+      if(currRequest.qtum[address(msg.sender)] == 1){
 
         //marking that this address has voted
-        currentQuery.qtum[msg.sender] = 1;
-        uint count = 0;
+        currRequest.qtum[msg.sender] = 2;
+
+        //iterate through "array" of answers until a position if free and save the retrieved value
+        uint tmpI = 0;
         bool found = false;
         while(!found) {
-          if(bytes(currentQuery.outcomes[count]).length == 0){
+          //find first empty slot
+          if(bytes(currRequest.answers[tmpI]).length == 0){
             found = true;
-            currentQuery.outcomes[count] = _outcome;
+            currRequest.answers[tmpI] = _valueRetrieved;
           }
-          count++;
+          tmpI++;
         }
 
         uint currentQtum = 0;
 
-        //icheck if k out of n oracles have reported
-        for(uint i = 0; i < totalQtumOracles; i++){
-          bytes memory oracleEntry = bytes(currentQuery.outcomes[i]);
-          bytes memory outcome = bytes(_outcome);
+        //iterate through oracle list and check if enough oracles(minimum quorum)
+        //have voted the same answer has the current one
+        for(uint i = 0; i < totalOracleCount; i++){
+          bytes memory a = bytes(currRequest.answers[i]);
+          bytes memory b = bytes(_valueRetrieved);
 
-          if(keccak256(oracleEntry) == keccak256(outcome)){
+          if(keccak256(a) == keccak256(b)){
             currentQtum++;
-            if(currentQtum >= minQtumOracles){
-              currentQuery.finalOutcome = _outcome;
-              emit updateQuery (
-                currentQuery.id,
-                currentQuery.source,
-                currentQuery.attribute,
-                currentQuery.finalOutcome
+            if(currentQtum >= minQtum){
+              currRequest.agreedValue = _valueRetrieved;
+              emit UpdatedRequest (
+                currRequest.id,
+                currRequest.urlToQuery,
+                currRequest.attributeToFetch,
+                currRequest.agreedValue
               );
-
-              Oracle relyingContract = Oracle(currentQuery.contractAddress);
-              relyingContract.callback(currentQuery.id, currentQuery.finalOutcome);
+              //require(currRequest.contractAddress.call(bytes4(keccak256("__callback(uint, string)")), currRequest.id, currRequest.agreedValue));
+              Oracle relyingContract = Oracle(currRequest.contractAddress);
+              relyingContract.callback(currRequest.id, currRequest.agreedValue);
             }
           }
         }
       }
     }
+
 }
+// contract address - 0xcBFF55037620fB1797ea4Da6a293947387267e74
