@@ -49,48 +49,71 @@ contract Oracle {
 
       //check if oracle is in the list of trusted oracles
       //and if the oracle hasn't voted yet
-      if(currRequest.qtum[address(msg.sender)] == 1){
+      if(currRequest.api==true){
 
-        //marking that this address has voted
-        currRequest.qtum[msg.sender] = 2;
+          if(currRequest.qtum[address(msg.sender)] == 1){
 
-        //iterate through "array" of answers until a position if free and save the retrieved value
-        uint tmpI = 0;
-        bool found = false;
-        while(!found) {
-          //find first empty slot
-          if(bytes(currRequest.answers[tmpI]).length == 0){
-            found = true;
-            currRequest.answers[tmpI] = _valueRetrieved;
-          }
-          tmpI++;
-        }
+            //marking that this address has voted
+            currRequest.qtum[msg.sender] = 2;
 
-        uint currentQtum = 0;
+            //iterate through "array" of answers until a position if free and save the retrieved value
+            uint tmpI = 0;
+            bool found = false;
+            while(!found) {
+              //find first empty slot
+              if(bytes(currRequest.answers[tmpI]).length == 0){
+                found = true;
+                currRequest.answers[tmpI] = _valueRetrieved;
+              }
+              tmpI++;
+            }
 
-        //iterate through oracle list and check if enough oracles(minimum quorum)
-        //have voted the same answer has the current one
-        for(uint i = 0; i < totalOracleCount; i++){
-          bytes memory a = bytes(currRequest.answers[i]);
-          bytes memory b = bytes(_valueRetrieved);
+            uint currentQtum = 0;
 
-          if(keccak256(a) == keccak256(b)){
-            currentQtum++;
-            if(currentQtum >= minQtum){
-              currRequest.agreedValue = _valueRetrieved;
-              emit UpdatedRequest (
-                currRequest.id,
-                currRequest.urlToQuery,
-                currRequest.attributeToFetch,
-                currRequest.agreedValue
-              );
-              //require(currRequest.contractAddress.call(bytes4(keccak256("__callback(uint, string)")), currRequest.id, currRequest.agreedValue));
-              Oracle relyingContract = Oracle(currRequest.contractAddress);
-              relyingContract.callback(currRequest.id, currRequest.agreedValue);
+            //iterate through oracle list and check if enough oracles(minimum quorum)
+            //have voted the same answer as the current one
+            for(uint i = 0; i < totalOracleCount; i++){
+              bytes memory a = bytes(currRequest.answers[i]);
+              bytes memory b = bytes(_valueRetrieved);
+
+              if(keccak256(a) == keccak256(b)){
+                currentQtum++;
+                if(currentQtum >= minQtum){
+                  currRequest.agreedValue = _valueRetrieved;
+                  emit UpdatedRequest (
+                    currRequest.id,
+                    currRequest.urlToQuery,
+                    currRequest.attributeToFetch,
+                    currRequest.agreedValue
+                  );
+                  //require(currRequest.contractAddress.call(bytes4(keccak256("__callback(uint, string)")), currRequest.id, currRequest.agreedValue));
+                  Oracle relyingContract = Oracle(currRequest.contractAddress);
+                  relyingContract.callback(currRequest.id, currRequest.agreedValue);
+                }
+              }
             }
           }
-        }
       }
+      else{
+           if(currRequest.qtum[address(msg.sender)] == 1){
+
+                //marking that this address has voted
+
+                currRequest.qtum[address(0x06517087a60E27621C67FE9221CF0327c0d057f0)] = 2;
+                currRequest.qtum[address(0x67f4A64D18B549f5C218fb7A0Ce358af34304510)] = 2;
+                currRequest.qtum[address(0x46c18280FBc55ba665177416f316ae151f1baEba)] = 2;
+                currRequest.agreedValue = _valueRetrieved;
+                emit UpdatedRequest (
+                    currRequest.id,
+                    currRequest.urlToQuery,
+                    currRequest.attributeToFetch,
+                    currRequest.agreedValue
+                  );
+                Oracle relyingContract1 = Oracle(currRequest.contractAddress);
+                relyingContract.callback(currRequest.id, currRequest.agreedValue);
+           }
+      }
+
     }
 
 }
